@@ -43,10 +43,10 @@ my %upload_plugin_info = (
 	'url'                           => "",
 	'registration'                  => "",
 	'name'                          => "QubesOS qvm-copy-to-vm wrapper",
-	'description'                   => "Copy a screenshot to an AppVM",#edit (a description of the service)
-	'supports_anonymous_upload'     => TRUE,                         #TRUE if you can upload *without* username/password
-	'supports_authorized_upload'    => FALSE,                         #TRUE if username/password are supported (might be in addition to anonymous_upload)
-	'supports_oauth_upload'         => FALSE,                            #TRUE if OAuth is used (see Dropbox.pm as an example)
+	'description'                   => "Copy a screenshot to an AppVM",
+	'supports_anonymous_upload'     => TRUE,
+	'supports_authorized_upload'    => FALSE,
+	'supports_oauth_upload'         => FALSE,
 );
 
 binmode( STDOUT, ":utf8" );
@@ -57,26 +57,22 @@ if ( exists $upload_plugin_info{$ARGV[0]} ) {
 
 ###################################################
 
-
 sub new {
 	my $class = shift;
-
-	#call constructor of super class (host, debug_cparam, shutter_root, gettext_object, main_gtk_window, ua)
 	my $self = $class->SUPER::new( shift, shift, shift, shift, shift, shift );
 
 	bless $self, $class;
 	return $self;
 }
 
-#load some custom modules here (or do other custom stuff)
+
 sub init {
 	my $self = shift;
+
 	$self->{_config} = {};
 	$self->{_config}->{vm_name} = '';
 
 	return $self->connect;
-
-	#    return TRUE;
 }
 
 
@@ -93,9 +89,7 @@ sub setup {
 		print "Getting target VM...\n";
 	}
 
-	#some helpers
 	my $sd = Shutter::App::SimpleDialogs->new;
-
 	my $combobox = Gtk2::ComboBox->new_text;
 
 	my @output = `qvm-ls --fields NAME | grep -v NAME`;
@@ -121,11 +115,9 @@ sub setup {
 	}
 }
 
-#handle
 sub upload {
 	my ( $self, $upload_filename ) = @_;
 
-	#store as object vars
 	$self->{_filename} = $upload_filename;
 	my $vm_name = $self->{_config}->{vm_name};
 
@@ -142,11 +134,7 @@ sub upload {
 		}
 	};
 
-	#and return links
 	return %{ $self->{_links} };
 }
-
-#you are free to implement some custom subs here, but please make sure they don't interfere with Shutter's subs
-#hence, please follow this naming convention: _<provider>_sub (e.g. _imageshack_convert_x_to_y)
 
 1;
