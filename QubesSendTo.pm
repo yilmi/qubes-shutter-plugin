@@ -1,7 +1,7 @@
 #! /usr/bin/env perl
 ###################################################
 #
-#  Copyright (C) <year> <author> <<email>>
+#  Copyright (C) 2018 Yassine Ilmi and Shutter Team
 #
 #  This file is part of Shutter.
 #
