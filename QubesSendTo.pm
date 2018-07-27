@@ -71,6 +71,7 @@ sub init {
 
 	$self->{_config} = {};
 	$self->{_config}->{vm_name} = '';
+	$self->{_config}->{default_config_file} = $ENV{"HOME"} . "/.shutter-qubes-default-vm";
 
 	return $self->connect;
 }
@@ -92,12 +93,29 @@ sub setup {
 	my $sd = Shutter::App::SimpleDialogs->new;
 	my $combobox = Gtk2::ComboBox->new_text;
 
-	my @output = `qvm-ls --fields NAME | grep -v NAME`;
-	chomp @output;
-	foreach (@output) {
-		$combobox->append_text($_);
+
+	my @top_vm_list = ();
+	my $top_vm_file = $self->{_config}->{default_config_file}; 
+	if ( -e $top_vm_file ) {
+		open(my $fh, '<', $top_vm_file)
+			or die "Could not open file '$top_vm_file' $!";
+		@top_vm_list = <$fh>;
+		close $fh;
+	}
+	chomp(@top_vm_list);
+
+	my @output = `qvm-ls --fields NAME | grep -Ev "NAME|dom0"`;
+	foreach my $vm (@output) {
+		chomp($vm);
+		if (grep { $_ eq $vm }  @top_vm_list) {
+			$combobox->prepend_text($vm);
+		}
+		else {
+			$combobox->append_text($vm);
+		}
 	}
 
+	$combobox->set_active(0);
 	$combobox->signal_connect(
 		changed => sub {
 			$self->{_config}->{vm_name} = $combobox->get_active_text;
