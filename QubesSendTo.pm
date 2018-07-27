@@ -94,7 +94,6 @@ sub setup {
 	my $sd = Shutter::App::SimpleDialogs->new;
 	my $combobox = Gtk2::ComboBox->new_text;
 
-
 	my @top_vm_list = ();
 	my $top_vm_file = $self->{_config}->{top_vm_file}; 
 	if ( -e $top_vm_file ) {
@@ -102,8 +101,8 @@ sub setup {
 			or die "Could not open file '$top_vm_file' $!";
 		@top_vm_list = <$fh>;
 		close $fh;
-		chomp(@top_vm_list);
 	}
+	chomp(@top_vm_list);
 
 	my @vm_list = ();
 	my $custom_list_file = $self->{_config}->{custom_list_file};
@@ -112,12 +111,12 @@ sub setup {
 			or die "Could not open file '$custom_list_file' $!";
 		@vm_list = <$fh>;
 		close $fh;
-		chomp(@vm_list);
 	}
 	else{
-		my @vm_list = `qvm-ls --fields NAME | grep -Ev "NAME|dom0"`;
+		@vm_list = `qvm-ls --fields NAME | grep -Ev "NAME|dom0"`;
 	}
-
+	chomp(@vm_list);
+	
 	foreach my $vm (@vm_list) {
 		chomp($vm);
 		if (grep { $_ eq $vm }  @top_vm_list) {
@@ -127,8 +126,6 @@ sub setup {
 			$combobox->append_text($vm);
 		}
 	}
-
-
 
 	$combobox->set_active(0);
 	$combobox->signal_connect(
